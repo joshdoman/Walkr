@@ -12,7 +12,7 @@ import UIKit
 class MainContainerViewController: UIViewController {
     
     var centerNavigationController: UINavigationController!
-    var centerViewController: MainController?
+    var centerViewController: MapViewController?
     
     var currentState: SlideOutState = .bothCollapsed {
         didSet {
@@ -28,10 +28,10 @@ class MainContainerViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        centerViewController = MainController()
-        centerViewController?.delegate = self
-        
+        centerViewController = MapViewController()
+
         centerNavigationController = UINavigationController(rootViewController: centerViewController!)
+        
         view.addSubview(centerNavigationController.view)
         addChildViewController(centerNavigationController)
         
@@ -41,6 +41,11 @@ class MainContainerViewController: UIViewController {
         
         let panGestureRecognizer = UIPanGestureRecognizer(target: self, action: #selector(handlePanGesture))
         centerNavigationController.view.addGestureRecognizer(panGestureRecognizer)
+        
+        let when = DispatchTime.now() + 0.2
+        DispatchQueue.main.asyncAfter(deadline: when) {
+            self.centerViewController?.delegate = self
+        }
     }
     
     func showShadowForCenterViewController(shouldShowShadow: Bool) {
@@ -128,7 +133,7 @@ extension MainContainerViewController: UIGestureRecognizerDelegate {
         switch(recognizer.state) {
         case .began: break
         case .changed:
-            if (currentState == .leftPanelExpanded) {
+            if currentState == .leftPanelExpanded {
                 recognizer.view!.center.x = recognizer.view!.center.x + recognizer.translation(in: view).x
                 recognizer.setTranslation(CGPoint(x: 0, y: 0), in: view)
             }

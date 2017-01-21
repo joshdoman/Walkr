@@ -28,28 +28,84 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         }
     }
     
+    var someoneRequesting: Bool = false
+    
+    var delegate: CenterViewControllerDelegate? {
+        didSet{
+            print("set")
+        }
+    }
+    
+    let bottomBar: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
+    lazy var buddyUpButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitle("BuddyUp!", for: .normal)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
+        button.addTarget(self, action: #selector(handleBuddyUp), for: .touchUpInside)
+        button.backgroundColor = .blue
+        return button
+    }()
+    
+    lazy var yesButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("Yes", for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.setTitleColor(UIColor.green, for: .normal)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
+        button.addTarget(self, action: #selector(handleYes), for: .touchUpInside)
+        return button
+    }()
+    
+    lazy var noButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.setTitle("No", for: .normal)
+        button.setTitleColor(UIColor.red, for: .normal)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
+        button.addTarget(self, action: #selector(handleNo), for: .touchUpInside)
+        return button
+    }()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
         initLocation()
         initMap()
 
-        setupNavigation()
+        someoneRequesting = true
         
-        let when = DispatchTime.now() + 0.2
-        DispatchQueue.main.asyncAfter(deadline: when) {
+        setupNavigationBar()
+        
+        checkIfSomeoneRequesting()
+    }
+    
+    func checkIfSomeoneRequesting() {
+        if someoneRequesting {
+            setupBottomBar(bar: bottomBar)
+            
             let startLocation = CLLocationCoordinate2D(latitude: 39.951557 , longitude: -75.193205)
             let endLocation = CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
-
+        
             self.map.addMarker(at: startLocation)
             self.map.addMarker(at: endLocation)
             
-            if let location = self.currentLocation {
-                self.map.addMarker(at: location)
-                self.getDirections(from: location, to: startLocation, color: UIColor.blue)
-            }
-            
             self.getDirections(from: startLocation, to: endLocation, color: UIColor.green)
+            
+            if let location = self.currentLocation {
+                
+                let when = DispatchTime.now() + 0.2
+                DispatchQueue.main.asyncAfter(deadline: when) {
+                    self.getDirections(from: location, to: startLocation, color: UIColor.blue)
+                    self.map.camera = GMSCameraPosition.camera(withTarget: location, zoom: 15)
+                }
+            }
         }
     }
     
@@ -66,6 +122,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         map.settings.myLocationButton = true
         map.settings.compassButton = true
         map.isMyLocationEnabled = true
+        
         self.view.addSubview(map)
         
         self.view.addConstraint(
@@ -104,24 +161,10 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             )
         )
         
-//        self.view.addConstraint(
-//            NSLayoutConstraint(
-//                item: map,
-//                attribute: .bottom,
-//                relatedBy: .equal,
-//                toItem: self.view,
-//                attribute: .bottom,
-//                multiplier: 1,
-//                constant: 1
-//            )
-//        )
-        
-        let v = UIView()
-        self.view.addSubview(v)
-        v.translatesAutoresizingMaskIntoConstraints = false
+        self.view.addSubview(bottomBar)
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: v,
+                item: bottomBar,
                 attribute: .left,
                 relatedBy: .equal,
                 toItem: self.view,
@@ -133,7 +176,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: v,
+                item: bottomBar,
                 attribute: .right,
                 relatedBy: .equal,
                 toItem: self.view,
@@ -145,7 +188,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: v,
+                item: bottomBar,
                 attribute: .bottom,
                 relatedBy: .equal,
                 toItem: self.view,
@@ -157,7 +200,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         self.view.addConstraint(
             NSLayoutConstraint(
-                item: v,
+                item: bottomBar,
                 attribute: .height,
                 relatedBy: .equal,
                 toItem: self.view,
@@ -173,17 +216,48 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
                 item: map,
                 attribute: .bottom,
                 relatedBy: .equal,
-                toItem: v,
+                toItem: bottomBar,
                 attribute: .top,
                 multiplier: 1,
                 constant: 1
             )
         )
         
-        v.backgroundColor = UIColor.red
-        
         map.translatesAutoresizingMaskIntoConstraints = false
         
+        setupBottomBar(bar: bottomBar)
+        
+    }
+    
+    func setupBottomBar(bar: UIView) {
+        buddyUpButton.removeFromSuperview()
+        noButton.removeFromSuperview()
+        yesButton.removeFromSuperview()
+        
+        if someoneRequesting {
+            
+            bar.addSubview(noButton)
+            bar.addSubview(yesButton)
+            
+            _ = noButton.anchor(bar.topAnchor, left: bar.leftAnchor, bottom: bar.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+            noButton.widthAnchor.constraint(equalTo: bar.widthAnchor, multiplier: 0.5).isActive = true
+            
+            _ = yesButton.anchor(bar.topAnchor, left: nil, bottom: bar.bottomAnchor, right: bar.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+            yesButton.widthAnchor.constraint(equalTo: bar.widthAnchor, multiplier: 0.5).isActive = true
+            
+        } else {
+            bar.addSubview(buddyUpButton)
+            
+            buddyUpButton.anchorToTop(bar.topAnchor, left: bar.leftAnchor, bottom: bar.bottomAnchor, right: bar.rightAnchor)
+        }
+
+    }
+    
+    func setupNavigationBar() {
+        let image = UIImage(named: "Menu")
+        self.navigationItem.leftBarButtonItem = UIBarButtonItem.itemWith(colorfulImage: image, target: self, action: #selector(handleShow))
+        self.title = User.current?.name
+        print(navigationController == nil)
     }
     
     func mapView(_ mapView: GMSMapView, markerInfoContents marker: GMSMarker) -> UIView? {
@@ -191,10 +265,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         view.bounds = CGRect(x: 0, y: 0, width: 60, height: 60)
         view.backgroundColor = UIColor.black
         return view
-    }
-    
-    func setupNavigation() {
-        self.title = User.current?.name
     }
     
     func direct(to place: CLLocationCoordinate2D) {

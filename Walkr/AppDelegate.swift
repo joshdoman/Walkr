@@ -40,7 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let mvc = MapViewController()
         mvc.request = request
         
-        window?.rootViewController = UINavigationController(rootViewController: MapViewController())
+        window?.rootViewController = MainContainerViewController()
         
         //FIRAuth.auth()?.createUser(withEmail: "test@test.com", password: "12345678", completion: nil)
         
