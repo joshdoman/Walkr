@@ -22,6 +22,7 @@
 		218B90151E32F5A4008EF091 /* SettingsSidePanelController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218B90141E32F5A4008EF091 /* SettingsSidePanelController.swift */; };
 		218B90171E32F5D7008EF091 /* Enums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218B90161E32F5D7008EF091 /* Enums.swift */; };
 		21AE89271E33020C00A6A653 /* MainController + handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AE89261E33020C00A6A653 /* MainController + handlers.swift */; };
+		21AE89291E3310C200A6A653 /* MapViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21AE89281E3310C200A6A653 /* MapViewController.swift */; };
 		DF2C7AC493BCD854EFD86EA8 /* Pods_Walkr.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6024B37474CCF0BA5B7EEF13 /* Pods_Walkr.framework */; };
 		E2D9689B525C4D709B8749C2 /* Pods_WalkrTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 7871E4A1426CB8535B2A6678 /* Pods_WalkrTests.framework */; };
 /* End PBXBuildFile section */
@@ -57,6 +58,7 @@
 		218B90141E32F5A4008EF091 /* SettingsSidePanelController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsSidePanelController.swift; sourceTree = "<group>"; };
 		218B90161E32F5D7008EF091 /* Enums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Enums.swift; sourceTree = "<group>"; };
 		21AE89261E33020C00A6A653 /* MainController + handlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MainController + handlers.swift"; sourceTree = "<group>"; };
+		21AE89281E3310C200A6A653 /* MapViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController.swift; sourceTree = "<group>"; };
 		6024B37474CCF0BA5B7EEF13 /* Pods_Walkr.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Walkr.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		6A07C3DEE1065AD053832740 /* Pods-WalkrTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WalkrTests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-WalkrTests/Pods-WalkrTests.debug.xcconfig"; sourceTree = "<group>"; };
 		7871E4A1426CB8535B2A6678 /* Pods_WalkrTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_WalkrTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -112,6 +114,7 @@
 				218B90091E32EB6C008EF091 /* Extensions.swift */,
 				218B90181E32F630008EF091 /* MainController */,
 				218B90121E32F55C008EF091 /* Delegates.swift */,
+				21AE89281E3310C200A6A653 /* MapViewController.swift */,
 				21AE89251E3301FE00A6A653 /* Handlers */,
 				218B90161E32F5D7008EF091 /* Enums.swift */,
 				218B8FEB1E32EB13008EF091 /* Main.storyboard */,
@@ -384,6 +387,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				21AE89291E3310C200A6A653 /* MapViewController.swift in Sources */,
 				218B900C1E32EB6C008EF091 /* Extensions.swift in Sources */,
 				218B90111E32F529008EF091 /* MainContainerViewController.swift in Sources */,
 				218B90151E32F5A4008EF091 /* SettingsSidePanelController.swift in Sources */,

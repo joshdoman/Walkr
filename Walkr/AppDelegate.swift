@@ -8,6 +8,8 @@
 
 import UIKit
 import Firebase
+import CoreLocation
+import GoogleMaps
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
@@ -20,15 +22,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         FIRApp.configure()
         
+        GMSServices.provideAPIKey("AIzaSyAs4UfwNjhm0i6Z_S_3KdOU_re6z0QNj-Y")
+        
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        window?.rootViewController = MainContainerViewController()
-        
-        FIRAuth.auth()?.signIn(withEmail: "test@test.com", password: "12345678", completion: nil)
-        
         let user = User(uid: "1235", name: "Josh", imageUrl: "slkdjf")
         User.current = user
+        
+        FIRAuth.auth()?.signIn(withEmail: "test@test.com", password: "12345678", completion: nil)
+
+        let startLocation = CLLocationCoordinate2D(latitude: 39.951507 , longitude: -75.193555)
+        let endLocation = CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
+        
+        let request = Request(location: startLocation, destination: endLocation, requester: user, walker: nil)
+        
+        let mvc = MapViewController()
+        mvc.request = request
+        
+        window?.rootViewController = UINavigationController(rootViewController: MapViewController())
         
         //FIRAuth.auth()?.createUser(withEmail: "test@test.com", password: "12345678", completion: nil)
         

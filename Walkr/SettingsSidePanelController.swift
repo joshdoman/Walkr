@@ -17,9 +17,5 @@ class SettingsSidePanelController: UIViewController {
         
     }
     
-    //subviews
-
-    
-    
     
 }

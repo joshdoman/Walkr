@@ -7,22 +7,23 @@
 //
 
 import UIKit
+import CoreLocation
 
 class Request: NSObject {
     
-    let startingLatitude: Double!
-    let startingLongitude: Double!
-    let endingLatitude: Double!
-    let endingLongitude: Double!
+    var location: CLLocationCoordinate2D
+    var destination: CLLocationCoordinate2D
     let requester: User!
-    let helper: User!
+    var walker: User!
     
-    init(startLat: Double, startLong: Double, endLat: Double, endLong: Double, requester: User, helper: User) {
-        startingLatitude = startLat
-        startingLongitude = startLong
-        endingLatitude = endLat
-        endingLongitude = endLong
+    init(location: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, requester: User, walker: User?) {
+        self.location = location
+        self.destination = destination
         self.requester = requester
-        self.helper = helper
+        self.walker = walker
+    }
+    
+    public func getRequesterName() -> String {
+        return requester.name
     }
 }

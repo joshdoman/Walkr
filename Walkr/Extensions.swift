@@ -7,6 +7,8 @@
 //
 
 import UIKit
+import CoreLocation
+import GoogleMaps
 
 //let's build that app
 let imageCache = NSCache<AnyObject, AnyObject>()
@@ -114,5 +116,12 @@ extension UIBarButtonItem {
         
         let barButtonItem = UIBarButtonItem(customView: button)
         return barButtonItem
+    }
+}
+
+extension GMSMapView {
+    func addMarker(at location: CLLocationCoordinate2D) {
+        let marker = GMSMarker(position: location)
+        marker.map = self
     }
 }

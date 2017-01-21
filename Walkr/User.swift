@@ -12,9 +12,9 @@ class User: NSObject {
     
     let name: String!
     let uid: String!
-    let imageUrl: String!
+    var imageUrl: String!
     
-    init(uid: String, name: String, imageUrl: String) {
+    init(uid: String, name: String, imageUrl: String?) {
         self.uid = uid
         self.name = name
         self.imageUrl = imageUrl
