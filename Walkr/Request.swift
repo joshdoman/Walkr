@@ -14,7 +14,14 @@ class Request: NSObject {
     var location: CLLocationCoordinate2D
     var destination: CLLocationCoordinate2D
     let requester: User!
-    var walker: User!
+    var walker: User?
+    
+    var fromId: String?
+    var timestamp: NSNumber?
+    var startLat: String?
+    var startLong: String?
+    var endLat: String?
+    var endLong: String?
     
     init(location: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, requester: User, walker: User?) {
         self.location = location
@@ -25,5 +32,15 @@ class Request: NSObject {
     
     public func getRequesterName() -> String {
         return requester.name
+    
     }
+}
+
+class RoughRequest: NSObject {
+    var fromId: String?
+    var timestamp: String?
+    var startLat: String?
+    var startLong: String?
+    var endLat: String?
+    var endLong: String?
 }

@@ -21,7 +21,8 @@ class MainContainerViewController: UIViewController {
         }
     }
     
-    var leftViewController: SettingsSidePanelController?
+//    var leftViewController: SettingsSidePanelController? = SettingsSidePanelController()
+    var leftViewController: UIViewController? = SettingsSidePanelController()
     
     let centerPanelExpandedOffset: CGFloat = 200
         
@@ -63,8 +64,7 @@ class MainContainerViewController: UIViewController {
         addChildSidePanelController(sidePanelController: leftViewController!)
     }
     
-    func addChildSidePanelController(sidePanelController: SettingsSidePanelController) {
-        
+    func addChildSidePanelController(sidePanelController: UIViewController) {
         view.insertSubview(sidePanelController.view, at: 0)
         
         addChildViewController(sidePanelController)

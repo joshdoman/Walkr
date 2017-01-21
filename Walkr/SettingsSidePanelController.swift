@@ -10,11 +10,14 @@ import UIKit
 
 class SettingsSidePanelController: UIViewController {
     
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = UIColor(r: 52, g: 61, b: 70)
         
+        setupViews()
+    }
+    
+    func setupViews() {
         //*------- Subviews -------* //
         
         view.addSubview(profileImageView)
@@ -35,15 +38,13 @@ class SettingsSidePanelController: UIViewController {
         //phone
         view.addSubview(phoneButton)
         setUpPhoneButton()
-        
-        
     }
     
     //subviews
     let profileImageView: UIImageView = {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
-        imageView.image = #imageLiteral(resourceName: "Profile")
+        imageView.image = UIImage(named: "Profile")
         return imageView
     }()
     
@@ -101,7 +102,7 @@ class SettingsSidePanelController: UIViewController {
         
     }
     
-    let logoutButton: UIButton = {
+    lazy var logoutButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.backgroundColor = UIColor(r: 112, g: 138, b: 144)
@@ -118,12 +119,12 @@ class SettingsSidePanelController: UIViewController {
     }
     
     
-    let phoneButton: UIButton = {
+    lazy var phoneButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.frame = CGRect(x: 100, y: 100, width: 100, height: 100)
-        button.setImage(#imageLiteral(resourceName: "phone"), for: .normal)
-        button.addTarget(self, action: #selector(handlePhoneCall), for:.touchUpInside)
+        button.setImage(UIImage(named: "Profile"), for: .normal)
+        //button.addTarget(self, action: #selector(handlePhoneCall), for:.touchUpInside)
         return button
     }()
     
@@ -141,6 +142,5 @@ class SettingsSidePanelController: UIViewController {
         UIApplication.shared.open(number, options: [:], completionHandler: nil)
         print("call done")
     }
-    
     
 }

@@ -8,6 +8,7 @@
 
 import UIKit
 import GoogleMaps
+import Firebase
 
 class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate {
 
@@ -22,23 +23,16 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         }
     }
     
-    var request: Request? {
-        didSet {
-
-        }
-    }
+    var request: Request?
     
     var someoneRequesting: Bool = false
     
-    var delegate: CenterViewControllerDelegate? {
-        didSet{
-            print("set")
-        }
-    }
+    var delegate: CenterViewControllerDelegate?
     
     let bottomBar: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = .white
         return view
     }()
     
@@ -78,35 +72,69 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         initLocation()
         initMap()
-
-        someoneRequesting = true
+        
+        setupMap()
         
         setupNavigationBar()
+        
+        setupBottomBar(bar: bottomBar)
         
         checkIfSomeoneRequesting()
     }
     
     func checkIfSomeoneRequesting() {
-        if someoneRequesting {
-            setupBottomBar(bar: bottomBar)
-            
-            let startLocation = CLLocationCoordinate2D(latitude: 39.951557 , longitude: -75.193205)
-            let endLocation = CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
-        
-            self.map.addMarker(at: startLocation)
-            self.map.addMarker(at: endLocation)
-            
-            self.getDirections(from: startLocation, to: endLocation, color: UIColor.green)
-            
-            if let location = self.currentLocation {
-                
-                let when = DispatchTime.now() + 0.2
-                DispatchQueue.main.asyncAfter(deadline: when) {
-                    self.getDirections(from: location, to: startLocation, color: UIColor.blue)
-                    self.map.camera = GMSCameraPosition.camera(withTarget: location, zoom: 15)
+        FIRDatabase.database().reference().child("outstanding-requests").observe(.childAdded, with: { (snapshot) in
+            FIRDatabase.database().reference().child("requests").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
+                guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                    return
                 }
-            }
+                let startLocation = CLLocationCoordinate2D(latitude: dictionary["startLat"] as! Double, longitude: dictionary["startLong"] as! Double)
+                let endLocation = CLLocationCoordinate2D(latitude: dictionary["endLat"] as! Double, longitude: dictionary["endLong"] as! Double)
+                let fromId = dictionary["fromId"] as! String
+                
+                FIRDatabase.database().reference().child("users").child(fromId).observeSingleEvent(of: .value, with: { (snapshot) in
+                    guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                        return
+                    }
+                    
+                    let name = dictionary["name"] as! String
+                    let imageUrl = dictionary["imageUrl"] as! String
+                    
+                    let user = User(uid: fromId, name: name, imageUrl: imageUrl)
+                    
+                    let request = Request(location: startLocation, destination: endLocation, requester: user, walker: nil)
+                    
+                    self.request = request
+                    self.setupMapForRequest(request: request)
+                })
+            })
+        }, withCancel: nil)
+    }
+    
+    func setupMap() {
+        guard let location = self.currentLocation else {
+            return
         }
+        
+        self.map.camera = GMSCameraPosition.camera(withTarget: location, zoom: 15)
+    }
+    
+    func setupMapForRequest(request: Request) {
+        someoneRequesting = true
+        
+        setupBottomBar(bar: bottomBar)
+        
+        let startLocation = request.location //CLLocationCoordinate2D(latitude: 39.951557 , longitude: -75.193205)
+        let endLocation = request.destination //CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
+
+        self.map.addMarker(at: startLocation)
+        self.map.addMarker(at: endLocation)
+        
+        self.getDirections(from: startLocation, to: endLocation, color: UIColor.green)
+        if let location = self.currentLocation {
+            self.getDirections(from: location, to: startLocation, color: UIColor.blue)
+        }
+
     }
     
     func initLocation() {
@@ -320,7 +348,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             do{
                 if let jsonResult = try JSONSerialization.jsonObject(with: data!, options: JSONSerialization.ReadingOptions.mutableContainers) as? NSDictionary {
                     let selectedRoute = (jsonResult["routes"] as! Array<Dictionary<String, AnyObject>>)[0]
-                    print(selectedRoute)
                     let overViewPolyLine = selectedRoute["overview_polyline"] as! Dictionary<String, AnyObject>
                     DispatchQueue.main.async {
                         
@@ -339,7 +366,6 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     }
     
     func drawRoute(for path: [String: AnyObject], color: UIColor) {
-        print(path)
         let route = path["points"] as! String
         let mapPath: GMSPath = GMSPath(fromEncodedPath: route)!
         let routePolyline = GMSPolyline(path: mapPath)

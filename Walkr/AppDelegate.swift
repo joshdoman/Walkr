@@ -27,7 +27,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let user = User(uid: "1235", name: "Josh", imageUrl: "slkdjf")
+        let user = User(uid: "c5aUMo0ca6ghrl2yiUyLTA5UFSm1", name: "Josh", imageUrl: "slkdjf")
         User.current = user
         
         FIRAuth.auth()?.signIn(withEmail: "test@test.com", password: "12345678", completion: nil)
