@@ -111,29 +111,24 @@ extension MapViewController {
             if snapshot.key != "helperId" {
                 return
             }
+
             
-            FIRDatabase.database().reference().child("requests").child(requestId).observeSingleEvent(of: .value, with: { (snapshot) in
-                guard let dictionary = snapshot.value as? [String: AnyObject] else {
-                    return
-                }
+            if let walkerId = snapshot.value as? String {
                 
-                if let walkerId = dictionary["fromId"] as? String {
+                FIRDatabase.database().reference().child("users").child(walkerId).observeSingleEvent(of: .value, with: { (snapshot) in
+                    guard let dictionary = snapshot.value as? [String: AnyObject] else {
+                        return
+                    }
                     
-                    FIRDatabase.database().reference().child("users").child(walkerId).observeSingleEvent(of: .value, with: { (snapshot) in
-                        guard let dictionary = snapshot.value as? [String: AnyObject] else {
-                            return
-                        }
-                        
-                        let name = dictionary["name"] as! String
-                        let imageUrl = dictionary["imageUrl"] as! String
-                        let phone = dictionary["phone"] as! String
-                        
-                        let user = User(uid: walkerId, name: name, imageUrl: imageUrl, phone: phone)
-                        
-                        self.showWalkrView(for: user)
-                    })
-                }
-            })
+                    let name = dictionary["name"] as! String
+                    let imageUrl = dictionary["imageUrl"] as! String
+                    let phone = dictionary["phone"] as! String
+                    
+                    let user = User(uid: walkerId, name: name, imageUrl: imageUrl, phone: phone)
+                    
+                    self.showWalkrView(for: user)
+                })
+            }
         }))
     }
     
@@ -188,7 +183,7 @@ extension MapViewController {
     }
     
     func checkIfRequestCancelled(for requestId: String) {
-        FIRDatabase.database().reference().child("request").child(requestId).observeSingleEvent(of: .childRemoved, with: { (snapshot) in
+        FIRDatabase.database().reference().child("requests").child(requestId).observeSingleEvent(of: .childRemoved, with: { (snapshot) in
             self.handleReset()
         })
     }

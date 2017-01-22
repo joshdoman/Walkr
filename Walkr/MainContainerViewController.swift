@@ -48,9 +48,11 @@ class MainContainerViewController: UIViewController {
             self.centerViewController?.delegate = self
         }
         
-        if let vc = leftViewController as? SettingsSidePanelController, let imageUrl = User.current?.imageUrl {
+        if let vc = leftViewController as? SettingsSidePanelController, let imageUrl = User.current?.imageUrl, let name = User.current?.name {
             vc.profileImageView.loadImageUsingCacheWithUrlString(urlString: imageUrl)
+            vc.nameTextView.text = name
         }
+        
     }
     
     func showShadowForCenterViewController(shouldShowShadow: Bool) {
@@ -64,6 +66,12 @@ class MainContainerViewController: UIViewController {
     func addLeftPanelViewController() {
         if (leftViewController == nil) {
             leftViewController = SettingsSidePanelController()
+            
+            if let vc = leftViewController as? SettingsSidePanelController, let imageUrl = User.current?.imageUrl, let name = User.current?.name {
+                vc.profileImageView.loadImageUsingCacheWithUrlString(urlString: imageUrl)
+                vc.nameTextView.text = name
+            }
+
         }
         addChildSidePanelController(sidePanelController: leftViewController!)
     }
@@ -114,8 +122,8 @@ extension MainContainerViewController: CenterViewControllerDelegate {
             animateCenterPanelXPosition(targetPosition: 0) { finished in
                 self.currentState = .bothCollapsed
                 
-                self.leftViewController!.view.removeFromSuperview()
-                self.leftViewController = nil;
+//                self.leftViewController!.view.removeFromSuperview()
+//                self.leftViewController = nil;
             }
         }
     }

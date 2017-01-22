@@ -46,6 +46,7 @@ class SettingsSidePanelController: UIViewController {
         imageView.layer.masksToBounds = false
         imageView.layer.cornerRadius = 65
         imageView.clipsToBounds = true
+        imageView.contentMode = .scaleAspectFill
         return imageView
     }()
     
@@ -90,7 +91,7 @@ class SettingsSidePanelController: UIViewController {
     
     let walkerModeSwitch: UISwitch = {
         let switcher = UISwitch()
-        switcher.onTintColor = .blue
+        switcher.onTintColor = UIColor(r: 83, g: 35, b: 75)
         switcher.translatesAutoresizingMaskIntoConstraints = false
         return switcher
     }()
@@ -106,7 +107,7 @@ class SettingsSidePanelController: UIViewController {
     lazy var logoutButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.backgroundColor = UIColor(r: 112, g: 138, b: 144)
+        button.backgroundColor = UIColor(r: 120, g: 120, b: 120)
         button.setTitle("Logout", for: .normal)
         button.setTitleColor(.white, for: .normal)
         button.addTarget(self, action: #selector(handleLogout), for: .touchUpInside)
