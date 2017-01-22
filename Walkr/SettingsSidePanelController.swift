@@ -43,6 +43,9 @@ class SettingsSidePanelController: UIViewController {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(named: "Profile")
+        imageView.layer.masksToBounds = false
+        imageView.layer.cornerRadius = 65
+        imageView.clipsToBounds = true
         return imageView
     }()
     

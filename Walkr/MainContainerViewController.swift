@@ -47,6 +47,10 @@ class MainContainerViewController: UIViewController {
         DispatchQueue.main.asyncAfter(deadline: when) {
             self.centerViewController?.delegate = self
         }
+        
+        if let vc = leftViewController as? SettingsSidePanelController, let imageUrl = User.current?.imageUrl {
+            vc.profileImageView.loadImageUsingCacheWithUrlString(urlString: imageUrl)
+        }
     }
     
     func showShadowForCenterViewController(shouldShowShadow: Bool) {
