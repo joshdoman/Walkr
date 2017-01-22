@@ -8,8 +8,14 @@
 
 import UIKit
 
+protocol BottomViewDelegate {
+    func handleBottomCancel()
+}
+
 class RequesterView: UIView {
-        
+    
+    var delegate: BottomViewDelegate?
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         
@@ -120,5 +126,6 @@ class RequesterView: UIView {
     
     func handleCancelWalkr() {
         print("cancel walker")
+        delegate?.handleBottomCancel()
     }
 }

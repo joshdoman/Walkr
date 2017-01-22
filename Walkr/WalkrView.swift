@@ -16,7 +16,10 @@ class WalkrView: UIView {
         }
     }
     
+    var delegate: BottomViewDelegate?
+    
     override init(frame: CGRect) {
+        
         super.init(frame: frame)
         
         //backgroundColor = UIColor(r: 83, g: 35, b: 74)
@@ -89,7 +92,7 @@ class WalkrView: UIView {
         ratingView.heightAnchor.constraint(equalToConstant: 25).isActive = true
     }
     
-    let phoneButton: UIButton = {
+    lazy var phoneButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(#imageLiteral(resourceName: "Phone"), for: .normal)
@@ -126,7 +129,7 @@ class WalkrView: UIView {
         phoneTextLabel.centerYAnchor.constraint(equalTo: phoneButton.centerYAnchor).isActive = true
     }
     
-    let cancelButton: UIButton = {
+    lazy var cancelButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setImage(#imageLiteral(resourceName: "Cancel"), for: .normal)
@@ -143,5 +146,6 @@ class WalkrView: UIView {
     
     func handleCancelWalkr() {
         print("cancel walker")
+        delegate?.handleBottomCancel()
     }
 }

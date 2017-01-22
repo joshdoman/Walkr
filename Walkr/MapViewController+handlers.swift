@@ -11,16 +11,22 @@ import Firebase
 
 extension MapViewController {
     func handleBuddyUp() {
-        sendRequest()
+        //sendRequest()
+        self.backTopAnchor?.constant = 63
+        animate()
+        
     }
     
     func handleYes() {
-        print("yes")
+        if let request = request {
+            helpRequester(for: request)
+        }
     }
     
     func handleNo() {
         bottomState = .buddyUp
         updateBottomBar()
+        checkIfSomeoneRequesting()
     }
     
     //make sure to set state before
@@ -52,11 +58,16 @@ extension MapViewController {
         delegate?.toggleLeftPanel!()
     }
     
-    func handleWalkrCanHelp() {
+    func handleReset() {
+        self.request = nil
+        self.bottomState = .buddyUp
+        self.updateBottomBar()
         
+        self.backTopAnchor?.constant = 0
+        self.view.layoutIfNeeded()
+        
+        map.clear()
+        checkIfSomeoneRequesting()
     }
     
-    func handleShowRequester() {
-        
-    }
 }

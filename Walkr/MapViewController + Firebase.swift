@@ -12,9 +12,7 @@ import CoreLocation
 
 extension MapViewController {
     
-    func sendRequest() {
-        let destination = CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
-        
+    func sendRequest(destination: CLLocationCoordinate2D) {        
         guard let user = User.current, let location = currentLocation else {
             return
         }
@@ -47,15 +45,17 @@ extension MapViewController {
     func checkIfSomeoneRequesting() {
         FIRDatabase.database().reference().child("outstanding-requests-by-user").observeSingleEvent(of: .childAdded, with: { (snapshot) in
             let fromId = snapshot.key
+            print(fromId)
             
-            FIRDatabase.database().reference().child("outstanding-requests-by-user").child(fromId).observeSingleEvent(of: .value, with: { (snapshot) in
+            FIRDatabase.database().reference().child("outstanding-requests-by-user").child(fromId).observeSingleEvent(of: .childAdded, with: { (snapshot) in
 
                 let requestId = snapshot.key
                 FIRDatabase.database().reference().child("requests").child(requestId).observeSingleEvent(of: .value, with: { (snapshot) in
-                    
+                    print(snapshot.value)
                     guard let dictionary = snapshot.value as? [String: AnyObject] else {
                         return
                     }
+                    
                     let startLocation = CLLocationCoordinate2D(latitude: dictionary["startLat"] as! Double, longitude: dictionary["startLong"] as! Double)
                     let endLocation = CLLocationCoordinate2D(latitude: dictionary["endLat"] as! Double, longitude: dictionary["endLong"] as! Double)
                     let fromId = dictionary["fromId"] as! String
@@ -88,10 +88,6 @@ extension MapViewController {
     
     func showPendingView() {
         pendingView.isHidden = false
-    }
-    
-    func deleteMyRequest() {
-        
     }
     
     func checkIfBeenHelped() {
@@ -142,8 +138,8 @@ extension MapViewController {
     }
     
     func helpRequester(for request: Request) {
-        guard let uid = User.current?.uid, let requesterId = request.requester.uid, let requestId = request.requestId, let user = request.requester
-  else {
+        guard let uid = User.current?.uid, let requesterId = request.requester.uid,
+            let requestId = request.requestId, let user = request.requester else {
             return
         }
 
@@ -151,7 +147,7 @@ extension MapViewController {
         FIRDatabase.database().reference().child("outstanding-requests-by-user").child(requesterId).removeValue()
         FIRDatabase.database().reference().child("requests-being-helped").updateChildValues([requestId: "1"])
         
-        FIRDatabase.database().reference().child("request").child(request.requestId).updateChildValues(["helperId": uid])
+        FIRDatabase.database().reference().child("requests").child(request.requestId).updateChildValues(["helperId": uid])
         
         showRequesterView(for: user)
     }
@@ -169,13 +165,24 @@ extension MapViewController {
         updateBottomBar()
     }
     
-    func requesterCancelRequest(for requestId: String) {
+    func cancelRequest(for requestId: String) {
         guard let uid = User.current?.uid else {
             return
         }
         
         FIRDatabase.database().reference().child("outstanding-requests-by-user").child(uid).removeValue()
+        FIRDatabase.database().reference().child("requests-being-helped").child(requestId).removeValue()
         FIRDatabase.database().reference().child("requests").child(requestId).removeValue()
+        
+        checkIfSomeoneRequesting()
+        
+        handleReset()
+    }
+    
+    func checkIfRequestCancelled(for requestId: String) {
+        FIRDatabase.database().reference().child("request").child(requestId).observeSingleEvent(of: .childRemoved, with: { (snapshot) in
+            self.handleReset()
+        })
     }
     
 }

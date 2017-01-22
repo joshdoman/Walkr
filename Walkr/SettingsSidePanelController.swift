@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Firebase
 
 class SettingsSidePanelController: UIViewController {
     
@@ -108,6 +109,7 @@ class SettingsSidePanelController: UIViewController {
         button.backgroundColor = UIColor(r: 112, g: 138, b: 144)
         button.setTitle("Logout", for: .normal)
         button.setTitleColor(.white, for: .normal)
+        button.addTarget(self, action: #selector(handleLogout), for: .touchUpInside)
         return button
     }()
     
@@ -141,6 +143,17 @@ class SettingsSidePanelController: UIViewController {
         guard let number = URL(string: "telprompt://" + "3195946488") else { return }
         UIApplication.shared.open(number, options: [:], completionHandler: nil)
         print("call done")
+    }
+    
+    func handleLogout() {
+
+        do {
+            try FIRAuth.auth()?.signOut()
+        } catch let logoutError {
+            print(logoutError)
+        }
+
+        self.dismiss(animated: true, completion: nil)
     }
     
 }
