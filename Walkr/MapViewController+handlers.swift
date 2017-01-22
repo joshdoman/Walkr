@@ -11,11 +11,6 @@ import Firebase
 
 extension MapViewController {
     func handleBuddyUp() {
-        print("BuddyUp!")
-        
-        someoneRequesting = true
-        setupBottomBar(bar: bottomBar)
-        
         sendRequest()
     }
     
@@ -24,40 +19,44 @@ extension MapViewController {
     }
     
     func handleNo() {
-        print("no")
-        someoneRequesting = false
-        setupBottomBar(bar: bottomBar)
+        bottomState = .buddyUp
+        updateBottomBar()
+    }
+    
+    //make sure to set state before
+    func updateBottomBar() {
+        buddyUpButton.isHidden = true
+        yesButton.isHidden = true
+        noButton.isHidden = true
+        walkrView.isHidden = true
+        requesterView.isHidden = true
+        
+        bottomBarHeightAnchor?.constant = 60
+        
+        switch bottomState {
+        case .buddyUp :
+            buddyUpButton.isHidden = false
+        case .confirm :
+            yesButton.isHidden = false
+            noButton.isHidden = false
+        case .showRequester :
+            bottomBarHeightAnchor?.constant = 120
+            requesterView.isHidden = false
+        case .showWalkr :
+            bottomBarHeightAnchor?.constant = 120
+            walkrView.isHidden = false
+        }
     }
     
     func handleShow() {
         delegate?.toggleLeftPanel!()
     }
     
-    func sendRequest() {
-        let destination = CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
+    func handleWalkrCanHelp() {
         
-        guard let user = User.current, let location = currentLocation else {
-            return
-        }
-                
-        let request = Request(location: location, destination: destination, requester: user, walker: nil)
+    }
+    
+    func handleShowRequester() {
         
-        let ref = FIRDatabase.database().reference().child("requests")
-        let childRef = ref.childByAutoId()
-        let fromId = user.uid
-        
-        let timestamp = NSNumber(value: Int(NSDate().timeIntervalSince1970))
-        let values: [String: AnyObject] = ["fromId": fromId as AnyObject, "timestamp": timestamp as AnyObject, "startLat": location.latitude as AnyObject, "startLong": location.longitude as AnyObject, "endLat": destination.latitude as AnyObject, "endLong": destination.longitude as AnyObject]
-        
-        childRef.updateChildValues(values) { (error, ref) in
-            
-            if error != nil {
-                print(error!)
-                return
-            }
-        }
-        
-        let requestId = childRef.key
-        FIRDatabase.database().reference().child("outstanding-requests").updateChildValues([requestId: 1])
     }
 }

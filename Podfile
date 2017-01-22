@@ -11,6 +11,7 @@ pod 'Firebase/Auth’
 pod 'Firebase/Database’
 pod 'Firebase/Storage’
 pod 'GoogleMaps'
+pod 'GooglePlaces'
 
   target 'WalkrTests' do
     inherit! :search_paths

@@ -8,6 +8,14 @@
 
 /* Begin PBXBuildFile section */
 		21272CFE1E3339D000F89D5D /* MapViewController+handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272CFD1E3339D000F89D5D /* MapViewController+handlers.swift */; };
+		21272D021E33F6D600F89D5D /* MapViewController + Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D011E33F6D600F89D5D /* MapViewController + Firebase.swift */; };
+		21272D071E34020B00F89D5D /* MapViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D061E34020B00F89D5D /* MapViewController2.swift */; };
+		21272D091E3402A100F89D5D /* MapViewController2 + handlers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D081E3402A100F89D5D /* MapViewController2 + handlers.swift */; };
+		21272D0B1E3403F700F89D5D /* PendingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D0A1E3403F700F89D5D /* PendingView.swift */; };
+		21272D0D1E340A3F00F89D5D /* PlaceTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D0C1E340A3F00F89D5D /* PlaceTableViewCell.swift */; };
+		21272D0F1E342C1200F89D5D /* RequesterView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D0E1E342C1200F89D5D /* RequesterView.swift */; };
+		21272D111E342C5100F89D5D /* WalkrView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D101E342C5100F89D5D /* WalkrView.swift */; };
+		21272D131E34503500F89D5D /* SearchPlaceBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21272D121E34503500F89D5D /* SearchPlaceBar.swift */; };
 		218B8FE81E32EB13008EF091 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 218B8FE71E32EB13008EF091 /* AppDelegate.swift */; };
 		218B8FED1E32EB13008EF091 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 218B8FEB1E32EB13008EF091 /* Main.storyboard */; };
 		218B8FEF1E32EB13008EF091 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 218B8FEE1E32EB13008EF091 /* Assets.xcassets */; };
@@ -39,6 +47,14 @@
 /* Begin PBXFileReference section */
 		16BFEB762D26059C8EF41DFC /* Pods-WalkrTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-WalkrTests.release.xcconfig"; path = "Pods/Target Support Files/Pods-WalkrTests/Pods-WalkrTests.release.xcconfig"; sourceTree = "<group>"; };
 		21272CFD1E3339D000F89D5D /* MapViewController+handlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapViewController+handlers.swift"; sourceTree = "<group>"; };
+		21272D011E33F6D600F89D5D /* MapViewController + Firebase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapViewController + Firebase.swift"; sourceTree = "<group>"; };
+		21272D061E34020B00F89D5D /* MapViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MapViewController2.swift; sourceTree = "<group>"; };
+		21272D081E3402A100F89D5D /* MapViewController2 + handlers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "MapViewController2 + handlers.swift"; sourceTree = "<group>"; };
+		21272D0A1E3403F700F89D5D /* PendingView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingView.swift; sourceTree = "<group>"; };
+		21272D0C1E340A3F00F89D5D /* PlaceTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlaceTableViewCell.swift; sourceTree = "<group>"; };
+		21272D0E1E342C1200F89D5D /* RequesterView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RequesterView.swift; sourceTree = "<group>"; };
+		21272D101E342C5100F89D5D /* WalkrView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WalkrView.swift; sourceTree = "<group>"; };
+		21272D121E34503500F89D5D /* SearchPlaceBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearchPlaceBar.swift; sourceTree = "<group>"; };
 		218B8FE41E32EB13008EF091 /* Walkr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Walkr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		218B8FE71E32EB13008EF091 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		218B8FEC1E32EB13008EF091 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -84,6 +100,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		21272D031E33FFE300F89D5D /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				21272D0E1E342C1200F89D5D /* RequesterView.swift */,
+				21272D0C1E340A3F00F89D5D /* PlaceTableViewCell.swift */,
+				21272D101E342C5100F89D5D /* WalkrView.swift */,
+				21272D121E34503500F89D5D /* SearchPlaceBar.swift */,
+				21272D0A1E3403F700F89D5D /* PendingView.swift */,
+			);
+			name = Views;
+			sourceTree = "<group>";
+		};
 		218B8FDB1E32EB13008EF091 = {
 			isa = PBXGroup;
 			children = (
@@ -107,7 +135,10 @@
 		218B8FE61E32EB13008EF091 /* Walkr */ = {
 			isa = PBXGroup;
 			children = (
+				21272D081E3402A100F89D5D /* MapViewController2 + handlers.swift */,
+				21272D061E34020B00F89D5D /* MapViewController2.swift */,
 				218B8FE71E32EB13008EF091 /* AppDelegate.swift */,
+				21272D031E33FFE300F89D5D /* Views */,
 				218B900D1E32EB71008EF091 /* Model */,
 				218B90091E32EB6C008EF091 /* Extensions.swift */,
 				218B90181E32F630008EF091 /* MainController */,
@@ -155,6 +186,7 @@
 			isa = PBXGroup;
 			children = (
 				21272CFD1E3339D000F89D5D /* MapViewController+handlers.swift */,
+				21272D011E33F6D600F89D5D /* MapViewController + Firebase.swift */,
 			);
 			name = Handlers;
 			sourceTree = "<group>";
@@ -385,14 +417,22 @@
 			buildActionMask = 2147483647;
 			files = (
 				21AE89291E3310C200A6A653 /* MapViewController.swift in Sources */,
+				21272D131E34503500F89D5D /* SearchPlaceBar.swift in Sources */,
 				218B900C1E32EB6C008EF091 /* Extensions.swift in Sources */,
 				218B90111E32F529008EF091 /* MainContainerViewController.swift in Sources */,
 				218B90151E32F5A4008EF091 /* SettingsSidePanelController.swift in Sources */,
+				21272D111E342C5100F89D5D /* WalkrView.swift in Sources */,
+				21272D021E33F6D600F89D5D /* MapViewController + Firebase.swift in Sources */,
+				21272D0D1E340A3F00F89D5D /* PlaceTableViewCell.swift in Sources */,
 				218B90131E32F55C008EF091 /* Delegates.swift in Sources */,
 				21272CFE1E3339D000F89D5D /* MapViewController+handlers.swift in Sources */,
 				218B900B1E32EB6C008EF091 /* Request.swift in Sources */,
+				21272D0F1E342C1200F89D5D /* RequesterView.swift in Sources */,
+				21272D071E34020B00F89D5D /* MapViewController2.swift in Sources */,
 				218B8FE81E32EB13008EF091 /* AppDelegate.swift in Sources */,
+				21272D091E3402A100F89D5D /* MapViewController2 + handlers.swift in Sources */,
 				218B90171E32F5D7008EF091 /* Enums.swift in Sources */,
+				21272D0B1E3403F700F89D5D /* PendingView.swift in Sources */,
 				218B900A1E32EB6C008EF091 /* User.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

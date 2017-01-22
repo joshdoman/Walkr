@@ -11,19 +11,14 @@ import CoreLocation
 
 class Request: NSObject {
     
+    let requestId: String!
     var location: CLLocationCoordinate2D
     var destination: CLLocationCoordinate2D
     let requester: User!
     var walker: User?
     
-    var fromId: String?
-    var timestamp: NSNumber?
-    var startLat: String?
-    var startLong: String?
-    var endLat: String?
-    var endLong: String?
-    
-    init(location: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, requester: User, walker: User?) {
+    init(requestId: String, location: CLLocationCoordinate2D, destination: CLLocationCoordinate2D, requester: User, walker: User?) {
+        self.requestId = requestId
         self.location = location
         self.destination = destination
         self.requester = requester
@@ -34,13 +29,4 @@ class Request: NSObject {
         return requester.name
     
     }
-}
-
-class RoughRequest: NSObject {
-    var fromId: String?
-    var timestamp: String?
-    var startLat: String?
-    var startLong: String?
-    var endLat: String?
-    var endLong: String?
 }

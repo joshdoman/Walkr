@@ -11,3 +11,10 @@ enum SlideOutState {
     case leftPanelExpanded
     case rightPanelExpanded
 }
+
+enum BottomBarState {
+    case buddyUp
+    case confirm
+    case showRequester
+    case showWalkr
+}

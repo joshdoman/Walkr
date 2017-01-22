@@ -9,6 +9,7 @@
 import UIKit
 import GoogleMaps
 import Firebase
+import GooglePlaces
 
 class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate {
 
@@ -23,9 +24,11 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         }
     }
     
-    var request: Request?
+    var client: GMSPlacesClient = GMSPlacesClient()
     
-    var someoneRequesting: Bool = false
+    var firebaseHandlers: [UInt] = [UInt]()
+    
+    var request: Request?
     
     var delegate: CenterViewControllerDelegate?
     
@@ -36,6 +39,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         return view
     }()
     
+    lazy var pendingView: PendingView = {
+        let pv = PendingView(frame: self.view.frame)
+        pv.delegate = self
+        pv.isHidden = true
+        return pv
+    }()
+    
     lazy var buddyUpButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
@@ -44,6 +54,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.addTarget(self, action: #selector(handleBuddyUp), for: .touchUpInside)
         button.backgroundColor = .blue
+        button.isHidden = false
         return button
     }()
     
@@ -54,6 +65,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         button.setTitleColor(UIColor.green, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
         button.addTarget(self, action: #selector(handleYes), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
     
@@ -64,8 +76,26 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         button.translatesAutoresizingMaskIntoConstraints = false
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 25)
         button.addTarget(self, action: #selector(handleNo), for: .touchUpInside)
+        button.isHidden = true
         return button
     }()
+    
+    let walkrView: WalkrView = {
+        let wv = WalkrView()
+        wv.isHidden = true
+        wv.translatesAutoresizingMaskIntoConstraints = false
+        return wv
+    }()
+    
+    let requesterView: RequesterView = {
+        let rv = RequesterView()
+        rv.isHidden = true
+        rv.translatesAutoresizingMaskIntoConstraints = false
+        return rv
+    }()
+    
+    var bottomBarHeightAnchor: NSLayoutConstraint?
+    var bottomState: BottomBarState = .buddyUp
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -77,39 +107,13 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         setupNavigationBar()
         
-        setupBottomBar(bar: bottomBar)
-        
         checkIfSomeoneRequesting()
+        
+        view.addSubview(pendingView)
+        
     }
     
-    func checkIfSomeoneRequesting() {
-        FIRDatabase.database().reference().child("outstanding-requests").observe(.childAdded, with: { (snapshot) in
-            FIRDatabase.database().reference().child("requests").child(snapshot.key).observeSingleEvent(of: .value, with: { (snapshot) in
-                guard let dictionary = snapshot.value as? [String: AnyObject] else {
-                    return
-                }
-                let startLocation = CLLocationCoordinate2D(latitude: dictionary["startLat"] as! Double, longitude: dictionary["startLong"] as! Double)
-                let endLocation = CLLocationCoordinate2D(latitude: dictionary["endLat"] as! Double, longitude: dictionary["endLong"] as! Double)
-                let fromId = dictionary["fromId"] as! String
-                
-                FIRDatabase.database().reference().child("users").child(fromId).observeSingleEvent(of: .value, with: { (snapshot) in
-                    guard let dictionary = snapshot.value as? [String: AnyObject] else {
-                        return
-                    }
-                    
-                    let name = dictionary["name"] as! String
-                    let imageUrl = dictionary["imageUrl"] as! String
-                    
-                    let user = User(uid: fromId, name: name, imageUrl: imageUrl)
-                    
-                    let request = Request(location: startLocation, destination: endLocation, requester: user, walker: nil)
-                    
-                    self.request = request
-                    self.setupMapForRequest(request: request)
-                })
-            })
-        }, withCancel: nil)
-    }
+
     
     func setupMap() {
         guard let location = self.currentLocation else {
@@ -120,9 +124,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
     }
     
     func setupMapForRequest(request: Request) {
-        someoneRequesting = true
-        
-        setupBottomBar(bar: bottomBar)
+        bottomState = .confirm
+        updateBottomBar()
         
         let startLocation = request.location //CLLocationCoordinate2D(latitude: 39.951557 , longitude: -75.193205)
         let endLocation = request.destination //CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
@@ -141,9 +144,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         locationManager = CLLocationManager()
         locationManager.requestWhenInUseAuthorization()
     }
-    
-    
-    
+
     func initMap() {
         map = GMSMapView()
         map.delegate = self
@@ -226,17 +227,8 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
             )
         )
         
-        self.view.addConstraint(
-            NSLayoutConstraint(
-                item: bottomBar,
-                attribute: .height,
-                relatedBy: .equal,
-                toItem: self.view,
-                attribute: .height,
-                multiplier: 1/10,
-                constant: 1
-            )
-        )
+        bottomBarHeightAnchor = bottomBar.heightAnchor.constraint(equalToConstant: 60)
+        bottomBarHeightAnchor?.isActive = true
         
         //bottom of map to top of button
         self.view.addConstraint(
@@ -253,32 +245,97 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         
         map.translatesAutoresizingMaskIntoConstraints = false
         
-        setupBottomBar(bar: bottomBar)
+        setupBottomBar()
+        
+        map.isExclusiveTouch = false
+        map.settings.consumesGesturesInView = false
+        
+        ///###################################
+        let backView = UIView()
+        backView.backgroundColor = .red
+        map.addSubview(backView)
+        map.bringSubview(toFront: backView)
+        
+        _ = backView.anchor(map.topAnchor, left: map.leftAnchor, bottom: nil, right: map.rightAnchor, topConstant: 100, leftConstant: 30, bottomConstant: 0, rightConstant: 30, widthConstant: 0, heightConstant: 300)
+        
+        let searchView = SearchPlaceBar()
+        searchView.delegate = self
+        
+        backView.addSubview(searchView)
+        //self.map.bringSubview(toFront: searchView)
+        //v.addSubview(searchController.searchBar)
+        searchView.translatesAutoresizingMaskIntoConstraints = false
+        
+        _ = searchView.anchor(backView.topAnchor, left: backView.leftAnchor, bottom: backView.bottomAnchor, right: backView.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+        
+//        
+//        map.addConstraint(
+//            NSLayoutConstraint(
+//                item: searchView,
+//                attribute: .centerX,
+//                relatedBy: .equal,
+//                toItem: map,
+//                attribute: .centerX,
+//                multiplier: 1,
+//                constant: 1
+//            )
+//        )
+//        map.addConstraint(
+//            NSLayoutConstraint(
+//                item: searchView,
+//                attribute: .width,
+//                relatedBy: .equal,
+//                toItem: map,
+//                attribute: .width,
+//                multiplier: 7/8,
+//                constant: 1
+//            )
+//        )
+//        map.addConstraint(
+//            NSLayoutConstraint(
+//                item: searchView,
+//                attribute: .height,
+//                relatedBy: .equal,
+//                toItem: map,
+//                attribute: .height,
+//                multiplier: 1/10,
+//                constant: 1
+//            )
+//        )
+//        map.addConstraint(
+//            NSLayoutConstraint(
+//                item: searchView,
+//                attribute: .centerY,
+//                relatedBy: .equal,
+//                toItem: map,
+//                attribute: .centerY,
+//                multiplier: 1,
+//                constant: 1
+//            )
+//        )
         
     }
     
-    func setupBottomBar(bar: UIView) {
-        buddyUpButton.removeFromSuperview()
-        noButton.removeFromSuperview()
-        yesButton.removeFromSuperview()
+    func setupBottomBar() {
+        let bar = bottomBar
+        bar.addSubview(noButton)
+        bar.addSubview(yesButton)
         
-        if someoneRequesting {
-            
-            bar.addSubview(noButton)
-            bar.addSubview(yesButton)
-            
-            _ = noButton.anchor(bar.topAnchor, left: bar.leftAnchor, bottom: bar.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
-            noButton.widthAnchor.constraint(equalTo: bar.widthAnchor, multiplier: 0.5).isActive = true
-            
-            _ = yesButton.anchor(bar.topAnchor, left: nil, bottom: bar.bottomAnchor, right: bar.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
-            yesButton.widthAnchor.constraint(equalTo: bar.widthAnchor, multiplier: 0.5).isActive = true
-            
-        } else {
-            bar.addSubview(buddyUpButton)
-            
-            buddyUpButton.anchorToTop(bar.topAnchor, left: bar.leftAnchor, bottom: bar.bottomAnchor, right: bar.rightAnchor)
-        }
-
+        _ = noButton.anchor(bar.topAnchor, left: bar.leftAnchor, bottom: bar.bottomAnchor, right: nil, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+        noButton.widthAnchor.constraint(equalTo: bar.widthAnchor, multiplier: 0.5).isActive = true
+        
+        _ = yesButton.anchor(bar.topAnchor, left: nil, bottom: bar.bottomAnchor, right: bar.rightAnchor, topConstant: 0, leftConstant: 0, bottomConstant: 0, rightConstant: 0, widthConstant: 0, heightConstant: 0)
+        yesButton.widthAnchor.constraint(equalTo: bar.widthAnchor, multiplier: 0.5).isActive = true
+        
+        bar.addSubview(buddyUpButton)
+        
+        buddyUpButton.anchorToTop(bar.topAnchor, left: bar.leftAnchor, bottom: bar.bottomAnchor, right: bar.rightAnchor)
+        
+        bottomBar.addSubview(walkrView)
+        bottomBar.addSubview(requesterView)
+        
+        walkrView.anchorToTop(bottomBar.topAnchor, left: bottomBar.leftAnchor, bottom: bottomBar.bottomAnchor, right: bottomBar.rightAnchor)
+        requesterView.anchorToTop(bottomBar.topAnchor, left: bottomBar.leftAnchor, bottom: bottomBar.bottomAnchor, right: bottomBar.rightAnchor)
     }
     
     func setupNavigationBar() {
@@ -375,3 +432,39 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         routePolyline.map = map
     }
 }
+
+extension MapViewController: PendingViewDelegate {
+    
+    func handleCancel() {
+        pendingView.isHidden = true
+        if let requestId = request?.requestId {
+            requesterCancelRequest(for: requestId)
+        }
+    }
+    
+}
+
+extension MapViewController: SearchPlaceBarDelegate {
+    func getMap() -> GMSMapView {
+        return map
+    }
+    
+    func dropPin(location: CLLocationCoordinate2D) {
+        map.addMarker(at: location)
+    }
+    
+    func resultSelected(place: GMSPlace) {
+        map.addMarker(at: place.coordinate)
+        
+    }
+    
+    func drawPath(path: GMSPolyline) {
+        print(path)
+        path.map = map
+    }
+    
+    func getClient() -> GMSPlacesClient {
+        return client
+    }
+}
+
