@@ -156,6 +156,10 @@ extension MapViewController {
         bottomState = .showWalkr
         pendingView.isHidden = true
         updateBottomBar()
+        
+        if let requestId = request?.requestId {
+            checkIfRequestCancelled(for: requestId)
+        }
     }
     
     func showRequesterView(for user: User) {
@@ -163,6 +167,10 @@ extension MapViewController {
         requesterView.nameView.text = user.name
         //if let phoneNumber =
         updateBottomBar()
+        
+        if let requestId = request?.requestId {
+            checkIfRequestCancelled(for: requestId)
+        }
     }
     
     func cancelRequest(for requestId: String) {

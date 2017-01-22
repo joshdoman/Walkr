@@ -509,17 +509,19 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         return button
     }()
     
-    let walkrView: WalkrView = {
+    lazy var walkrView: WalkrView = {
         let wv = WalkrView()
         wv.isHidden = true
         wv.translatesAutoresizingMaskIntoConstraints = false
+        wv.delegate = self
         return wv
     }()
     
-    let requesterView: RequesterView = {
+    lazy var requesterView: RequesterView = {
         let rv = RequesterView()
         rv.isHidden = true
         rv.translatesAutoresizingMaskIntoConstraints = false
+        rv.delegate = self
         return rv
     }()
     
@@ -875,5 +877,16 @@ extension MapViewController: SearchPlaceBarDelegate {
         UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 1.2, initialSpringVelocity: 0.5, options: .curveEaseOut, animations: {
             self.view.layoutIfNeeded()
         }, completion: nil)
+    }
+}
+
+extension MapViewController: BottomViewDelegate {
+    
+    func handleBottomCancel() {
+        guard let requestId = request?.requestId else {
+            return
+        }
+        
+        cancelRequest(for: requestId)
     }
 }
