@@ -14,7 +14,7 @@ extension MapViewController {
         //sendRequest()
         self.backTopAnchor?.constant = 63
         animate()
-        
+        _ = searchBar.becomeFirstResponder()
     }
     
     func handleYes() {

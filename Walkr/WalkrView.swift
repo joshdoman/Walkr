@@ -13,6 +13,9 @@ class WalkrView: UIView {
     var user: User? {
         didSet {
             nameView.text = user?.name
+            if let url = user?.imageUrl {
+                profilepictureView.loadImageUsingCacheWithUrlString(urlString: url)
+            }
         }
     }
     

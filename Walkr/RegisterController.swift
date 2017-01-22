@@ -153,6 +153,7 @@ class RegisterController: UIViewController, UICollectionViewDataSource, UICollec
         
         if let selectedImage = selectedImageFromPicker {
             registerPhotoCell?.profileImageView.image = selectedImage
+            registerPhotoCell?.image = selectedImage
         }
         
         dismiss(animated: true, completion: nil)
@@ -182,7 +183,7 @@ class RegisterController: UIViewController, UICollectionViewDataSource, UICollec
                 return
             }
             
-            guard let uid = user?.uid else {
+            guard let uid = user?.uid, let image = self.registerPhotoCell?.image else {
                 return
             }
             
@@ -190,7 +191,7 @@ class RegisterController: UIViewController, UICollectionViewDataSource, UICollec
             let imageName = NSUUID().uuidString
             let storageRef = FIRStorage.storage().reference().child("profile_images").child("\(imageName).jpg")
             
-            if let uploadData = UIImageJPEGRepresentation(profilePicture, 0.3) {
+            if let uploadData = UIImageJPEGRepresentation(image, 0.3) {
                 
                 storageRef.put(uploadData, metadata: nil, completion: { (metadata, error) in
                     

@@ -557,51 +557,60 @@ class SearchPlaceBar: UIView, UISearchBarDelegate, UITableViewDelegate, UITableV
         delegate?.drawPath(path: routePolyline)
     }
     
+    var timer = Timer()
     
     func autocomplete(_ search: String, complete: @escaping ([GMSPlace]) -> ()) {
-        var tempList : [GMSPlace] = []
-        if let map = delegate?.getMap(), let client = delegate?.getClient() {
-            let visibleRegion = map.projection.visibleRegion()
-            let bounds = GMSCoordinateBounds(coordinate: visibleRegion.farLeft, coordinate: visibleRegion.nearRight)
-            
-            let filter = GMSAutocompleteFilter()
-            filter.type = .establishment
-            client.autocompleteQuery(search, bounds: bounds, filter: filter, callback: {
-                (results, error) -> Void in
-                guard error == nil else {
-                    print("Autocomplete error \(error)")
-                    return
-                }
-                if let results = results {
-                    var count = 0 {
-                        didSet {
-                            if count == results.count {
-                                complete(tempList)
-                            }
-                        }
+        timer.invalidate()
+        timer = Timer.scheduledTimer(withTimeInterval: 0.3, repeats: false, block: { (timer) in
+            var tempList : [GMSPlace] = []
+            if !search.isEmpty, let map = self.delegate?.getMap(), let client = self.delegate?.getClient() {
+                let visibleRegion = map.projection.visibleRegion()
+                let bounds = GMSCoordinateBounds(coordinate: visibleRegion.farLeft, coordinate: visibleRegion.nearRight)
+                
+                let filter = GMSAutocompleteFilter()
+                filter.type = .establishment
+                client.autocompleteQuery(search, bounds: bounds, filter: filter, callback: {
+                    (results, error) -> Void in
+                    guard error == nil else {
+                        print("Autocomplete error \(error)")
+                        return
                     }
-                    for prediction in results {
-                        guard let id = prediction.placeID else {
-                            return
-                        }
-                        
-                        client.lookUpPlaceID(id) {place,error in
-                            if let error = error {
-                                print(error)
-                            }
-                            else {
-                                guard let place = place else {
-                                    return
+                    if let results = results {
+                        var count = 0 {
+                            didSet {
+                                if count == results.count {
+                                    complete(tempList)
                                 }
-                                
-                                tempList.append(place)
-                                count += 1
+                            }
+                        }
+                        for prediction in results {
+                            guard let id = prediction.placeID else {
+                                return
+                            }
+                            
+                            client.lookUpPlaceID(id) {place,error in
+                                if let error = error {
+                                    print(error)
+                                }
+                                else {
+                                    guard let place = place else {
+                                        return
+                                    }
+                                    
+                                    tempList.append(place)
+                                    count += 1
+                                }
                             }
                         }
                     }
-                }
-            })
-        }
+                })
+            }
+        })
+    }
+    
+    override func becomeFirstResponder() -> Bool {
+        searchBar.becomeFirstResponder()
+        return true
     }
     
     

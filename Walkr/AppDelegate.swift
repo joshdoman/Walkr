@@ -24,23 +24,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         FIRApp.configure()
         
         GMSServices.provideAPIKey("AIzaSyAs4UfwNjhm0i6Z_S_3KdOU_re6z0QNj-Y")
-        GMSPlacesClient.provideAPIKey("AIzaSyASfgMGqXmLTqiUxW_e5Jqdb8ksE06pBPo")
+        GMSPlacesClient.provideAPIKey("AIzaSyBROroPnPGjVE_tRY4ezO9wNi6Z9FLDgHY")
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
-        let user = User(uid: "c5aUMo0ca6ghrl2yiUyLTA5UFSm1", name: "Josh", imageUrl: "slkdjf", phone: "4046928439")
-        //let user = User(uid: "lkjsdfskjs", name: "Frank", imageUrl: "slkdjf", phone: "4046928439")
-        User.current = user
-        
-        FIRAuth.auth()?.signIn(withEmail: "test@test.com", password: "12345678", completion: nil)
-
-//        let startLocation = CLLocationCoordinate2D(latitude: 39.951507 , longitude: -75.193555)
-//        let endLocation = CLLocationCoordinate2D(latitude: 39.953480 , longitude: -75.191414)
-//        
         window?.rootViewController = LoginRegisterController()//MainContainerViewController()
-        
-        //FIRAuth.auth()?.createUser(withEmail: "test@test.com", password: "12345678", completion: nil)
         
         return true
     }

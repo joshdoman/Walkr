@@ -440,6 +440,7 @@ import GooglePlaces
 
 class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManagerDelegate {
     var backView: UIView!
+    var searchBar: SearchPlaceBar!
     var map : GMSMapView!
     var locationManager : CLLocationManager!
     var backTopAnchor: NSLayoutConstraint!
@@ -482,7 +483,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         button.setTitleColor(UIColor.white, for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 20)
         button.addTarget(self, action: #selector(handleBuddyUp), for: .touchUpInside)
-        button.backgroundColor = .blue
+        button.backgroundColor = UIColor(r: 83, g: 35, b: 75)
         button.isHidden = false
         return button
     }()
@@ -702,6 +703,7 @@ class MapViewController: UIViewController, GMSMapViewDelegate, CLLocationManager
         backHeightAnchor?.isActive = true
         
         let searchView = SearchPlaceBar()
+        searchBar = searchView
         searchView.delegate = self
         
         

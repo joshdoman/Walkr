@@ -47,6 +47,8 @@ class RegisterPhotoCell: UICollectionViewCell, UIImagePickerControllerDelegate {
         return imageView
     }()
     
+    var image: UIImage?
+    
     func setUpImageView() {
         profileImageView.centerXAnchor.constraint(equalTo: centerXAnchor).isActive = true
         profileImageView.topAnchor.constraint(equalTo: topAnchor, constant: 40).isActive = true

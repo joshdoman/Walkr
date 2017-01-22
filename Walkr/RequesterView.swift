@@ -16,6 +16,15 @@ class RequesterView: UIView {
     
     var delegate: BottomViewDelegate?
     
+    var user: User? {
+        didSet {
+            nameView.text = user?.name
+            if let url = user?.imageUrl {
+                profilepictureView.loadImageUsingCacheWithUrlString(urlString: url)
+            }
+        }
+    }
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         

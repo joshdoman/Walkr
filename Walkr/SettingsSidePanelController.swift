@@ -35,10 +35,7 @@ class SettingsSidePanelController: UIViewController {
         
         view.addSubview(logoutButton)
         setUpLogoutButton()
-        
-        //phone
-        view.addSubview(phoneButton)
-        setUpPhoneButton()
+
     }
     
     //subviews
@@ -118,31 +115,6 @@ class SettingsSidePanelController: UIViewController {
         logoutButton.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         logoutButton.heightAnchor.constraint(equalToConstant: 60).isActive = true
         logoutButton.widthAnchor.constraint(equalToConstant: 200).isActive = true
-    }
-    
-    
-    lazy var phoneButton: UIButton = {
-        let button = UIButton()
-        button.translatesAutoresizingMaskIntoConstraints = false
-        button.frame = CGRect(x: 100, y: 100, width: 100, height: 100)
-        button.setImage(UIImage(named: "Profile"), for: .normal)
-        //button.addTarget(self, action: #selector(handlePhoneCall), for:.touchUpInside)
-        return button
-    }()
-    
-    
-    func setUpPhoneButton() {
-        phoneButton.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        phoneButton.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
-        phoneButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        phoneButton.widthAnchor.constraint(equalToConstant: 50).isActive = true
-    }
-    
-    func handlePhoneCall() {
-        print("123")
-        guard let number = URL(string: "telprompt://" + "3195946488") else { return }
-        UIApplication.shared.open(number, options: [:], completionHandler: nil)
-        print("call done")
     }
     
     func handleLogout() {
